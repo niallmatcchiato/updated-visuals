@@ -1,0 +1,9 @@
+Flask
+seaborn
+matplotlib
+folium
+squarify
+plotly
+firebase_admin
+firebase
+streamlit

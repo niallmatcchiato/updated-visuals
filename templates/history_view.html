@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<p class="h1 mb-3"><a href='{{url_for("history")}}'><i class="bi bi-arrow-left-circle-fill me-4"></i></a>View Analytics & Visualizations</p>
+<div class="row">
+    <div class="col col-12 col-md-4 mb-3">
+        <label class="form-label">
+            Dataset name
+        </label>
+        <p>
+            {{data.name}}
+        </p>
+    </div>
+    <div class="col col-12 col-md-4 mb-3">
+        <label class="form-label">
+            Dataset ID
+        </label>
+        <p>
+            {{data.dataset_id}}
+        </p>
+    </div>
+    <div class="col col-12 col-md-4 mb-3">
+        <label class="form-label">
+            Analytics ID
+        </label>
+        <p>
+            {{data.id}}
+        </p>
+    </div>
+    <hr class="my-3">
+    <div class="col col-12 col-md-6 mb-3">
+        <label class="form-label">
+            Date of Analysis
+        </label>
+        <p>
+            {{data.save_date}}
+        </p>
+    </div>
+    <div class="col col-12 col-md-6 mb-3">
+        <label class="form-label">
+            Police-in-charge
+        </label>
+        <p>
+            {{data.uploader}}
+        </p>
+    </div>
+</div>
+<hr class="my-3">
+<img id='plot_1' src='{{data.plot_1}}' class="img-fluid mb-5">
+<img id='plot_2' src='{{data.plot_2}}' class="img-fluid mb-5">
+<img id='plot_3' src='{{data.plot_3}}' class="img-fluid mb-5">
+<img id='plot_4' src='{{data.plot_4}}' class="img-fluid mb-5">
+<img id='plot_5'  src='{{data.plot_5}}' class="img-fluid mb-5">
+<div id='table_div'>
+    <table class="table my-5" id='table'>
+        {{data.table | safe}}
+    </table>
+</div>
+
+{% endblock %}

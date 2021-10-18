@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+
+<p class="h1 mb-3">Dataset List</p>
+<table class="table my-5" id='table'>
+    <thead>
+        <tr>
+            <th scope="col">Dataset Name</th>
+            <th scope="col">Dataset ID</th>
+            <th scope="col">Date of Registration</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in list%}
+    <tr>
+        <td>{{item.name}}</td>
+        <td>{{item.id}}</td>
+        <td>{{item.save_date}}</td>
+        <td>
+            <a href='{{url_for("list_view", id=item.id)}}'>
+                <button class="btn btn-primary">View</button>
+            </a>
+        </td>
+    </tr>
+    {%endfor%}
+    </tbody>
+</table>
+
+
+
+
+{% endblock %}

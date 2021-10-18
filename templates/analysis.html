@@ -1,0 +1,157 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+
+<p class="h1 mb-3">Dataset Analysis</p>
+<div class="row">
+    <div class="col col-12 col-md-9">
+        <label class="form-label">
+            Choose a dataset to analyze
+        </label>
+        <select class="form-select" id='dataset_id'>
+            <option value=""></option>
+            {% for item in datasets %}
+            <option value="{{item.id}}">{{item.name}} ({{item.id}})</option>
+            {%endfor%}
+        </select>
+    </div>
+    <div class="col col-12 col-md-3">
+        <label class="form-label">
+            &nbsp;
+        </label>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary" type="button" id='analyze'>Analyze</button>
+        </div>
+    </div>
+</div>
+
+<div id='output' class="d-none">
+    <p class="h1 mb-3 mt-5">Analytics & Visualizations</p>
+    <img id='plot_1' class="img-fluid mb-5">
+    <img id='plot_2' class="img-fluid mb-5">
+    <img id='plot_3' class="img-fluid mb-5">
+    <img id='plot_4' class="img-fluid mb-5">
+    <img id='plot_5' class="img-fluid mb-5">
+    <div id='table_div'>
+        <table class="table my-5" id='table'>
+        
+        </table>
+    </div>
+    <div class="d-grid gap-2">
+        <button class="btn btn-success" type="button" id='save'><i class="bi bi-folder-symlink-fill me-2"></i>Save Analytics</button>
+    </div>
+</div>
+
+
+<script>
+    var current_analytics;
+    var current_dataset;
+    document.getElementById('analyze').addEventListener('click', function() {
+        var id = document.getElementById('dataset_id').value;
+        current_dataset = id;
+
+        if (id) {
+            this.disabled = true;
+            document.getElementById('save').disabled = false;
+            document.getElementById('output').classList.add('d-none');
+
+            fetch(`/analyze_dataset/${id}`)
+            .then(response => {
+                response_ok = response.ok;
+                return response.json()
+            })
+            .then(data => {
+                if (response_ok) {
+                    if (data.status === 'success') {
+                        document.getElementById('plot_1').src = data.plot_1;
+                        document.getElementById('plot_2').src = data.plot_2;
+                        document.getElementById('plot_3').src = data.plot_3;
+                        document.getElementById('plot_4').src = data.plot_4;
+                        document.getElementById('plot_5').src = data.plot_5;
+
+                        document.getElementById('table').innerHTML = `
+                        <thead>
+                            <tr>
+                            <th scope="col">Neighborhood</th>
+                            <th scope="col">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>${data.table.Neighborhood[0]}</td>
+                            <td>${data.table.Count[0]}</td>
+                        </tr>
+                        <tr>
+                            <td>${data.table.Neighborhood[1]}</td>
+                            <td>${data.table.Count[1]}</td>
+                        </tr>
+                        <tr>
+                            <td>${data.table.Neighborhood[2]}</td>
+                            <td>${data.table.Count[2]}</td>
+                        </tr>
+                        <tr>
+                            <td>${data.table.Neighborhood[3]}</td>
+                            <td>${data.table.Count[3]}</td>
+                        </tr>
+                        </tbody>
+                        `;
+                        document.getElementById('output').classList.remove('d-none');
+                        current_analytics = data;
+                    } else {
+                        alert('An error has occured.');
+                    }
+                } else {
+                    alert('An error has occured.');
+                }
+                this.disabled = false;
+            })
+            .catch((error) => {
+                this.disabled = false;
+                console.error('Error:', error);
+            });
+        }
+    });
+
+    document.getElementById('save').addEventListener('click', function() {
+            this.disabled = true;
+            var data = {
+                plot_1 : current_analytics.plot_1,
+                plot_2 : current_analytics.plot_2,
+                plot_3 : current_analytics.plot_3,
+                plot_4 : current_analytics.plot_4,
+                plot_5 : current_analytics.plot_5,
+                table: document.getElementById('table_div').innerHTML,
+                dataset_id: current_dataset
+            }
+            fetch(`/save_analytics`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+            })
+            .then(response => {
+                response_ok = response.ok;
+                return response.json()
+            })
+            .then(data => {
+                if (response_ok) {
+                    if (data.status === 'success') {
+                        alert('Analytics has been saved in history.');
+                    } else {
+                        alert('An error has occured.');
+                    }
+                } else {
+                    alert('An error has occured.');
+                }
+            })
+            .catch((error) => {
+                this.disabled = false;
+                console.error('Error:', error);
+            });
+        }
+    );
+</script>
+
+{% endblock %}
